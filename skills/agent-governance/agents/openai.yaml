@@ -1,0 +1,4 @@
+interface:
+  display_name: 'Agent Governance'
+  short_description: 'Bootstrap and evolve governance'
+  default_prompt: 'Use $agent-governance to bootstrap governance files deterministically, then run agent-driven adapt/upgrade/finalize for project-aware updates.'

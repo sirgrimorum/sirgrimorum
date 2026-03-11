@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(bash D:/negocios/sirgrimorum/skills/agent-governance/scripts/agent-governance-sync.sh bootstrap)"
+    ]
+  }
+}
