@@ -1,6 +1,6 @@
 # AI Development Guide
 
-Generic baseline for AI-assisted development in this repository.
+AI development guide for the Sirgrimorum static landing page.
 
 Keep this file updated with project-specific context (commands, structure, constraints) as the codebase evolves.
 
@@ -25,22 +25,28 @@ Keep this file updated with project-specific context (commands, structure, const
 4. Run verification commands.
 5. Update plan files and PR draft artifacts as needed.
 
+## Project-Specific Context
+
+- **Single file**: `index.html` + `CNAME`. No build step, no dependencies, no package manager.
+- **Deployed via GitHub Pages** — push to `main` on `sirgrimorum/sirgrimorum.com` repo.
+- **Design tokens** inline in `index.html` as CSS custom properties (sourced from monorepo `packages/web-ui/src/css/tokens.css`).
+- **No JavaScript** — pure HTML + CSS only.
+- **Active plan**: `plan/sirgrimorum-landing.md`.
+
 ## Command Interface
 
 Prefer use-case commands in `Makefile`.
 
-Suggested baseline:
+For this project (static HTML, no build tooling):
 
 ```bash
-make install
-make dev
-make test
-make test-e2e
-make typecheck
-make lint
-make format
-make ci
+# Verify the page renders correctly — open index.html in a browser
+make verify   # runs lint (HTML validation if configured)
+
+# Governance
 make agents-bootstrap
+make agents-adapt
+make agents-finalize
 ```
 
 For agent-driven governance evolution (`adapt`, `upgrade`, `finalize`), use the governance skill workflow directly.

@@ -1,4 +1,4 @@
-# <Project Name> — use-case command interface
+# Sirgrimorum — use-case command interface
 
 .DEFAULT_GOAL := help
 

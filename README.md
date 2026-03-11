@@ -1,54 +1,47 @@
-# Project Bootstrap Kit — AI Assistant System
+# Sirgrimorum
 
-Reusable starter files to replicate the Entrepreneurity operating model in a new repository.
+Personal portfolio hub at [sirgrimorum.com](https://sirgrimorum.com) — steampunk pixel art landing page linking to three alpha projects, and the sending domain for Resend-based waitlist emails.
 
-## Design Principle
+## Purpose
 
-`AGENTS.md` is canonical and agent-agnostic. Other agent files are thin adapters.
+1. **Sender reputation** — gives `@sirgrimorum.com` a real web presence so Gmail/Yahoo don't flag outbound waitlist emails as spam.
+2. **Project hub** — single page with cards linking to Cerebro Externo, Forge Mentor, and Entrepreneurity.
+3. **Personal branding** — lightweight portfolio presence.
 
-## What This Kit Provides
+## Projects Linked
 
-- Canonical assistant governance (`AGENTS.md`)
-- Agent adapters (`CLAUDE.md`, `CODEX.md`, `.gemini/GEMINI.md`, Copilot instructions)
-- Agent skill compatibility via `make agents-*` targets
-- Agent-agnostic rules source (`ai/rules/`)
-- Agent-agnostic hook scripts (`scripts/hooks/`)
-- Claude adapters for rules/hooks (`.claude/rules/`, `.claude/hooks/`)
-- Use-case-oriented `Makefile`
-- Branching/worktree and IaC ownership split docs
-- Contract-first + BFF architecture guidance
-- Feature/foundation planning templates (`plan/`)
-- PR temp markdown workflow (`prs/`)
-- Manual setup and art-direction documentation scaffolding
-- Generic `docs/ai-development-guide.md` baseline for per-project updates
+| Project | URL | Status |
+| ------- | --- | ------ |
+| Cerebro Externo | [brain4ai.app](https://brain4ai.app) | Alpha |
+| Forge Mentor | [mentor4ai.app](https://mentor4ai.app) | Alpha |
+| Entrepreneurity | [entrepreneurity.app](https://entrepreneurity.app) | Coming Soon |
 
-## Quick Start (new repo)
+## Implementation
 
-1. Copy this folder into the new repo root.
-2. Replace placeholders (`<Project Name>`) and app/package paths.
-3. Keep policy text in `AGENTS.md`; keep adapters minimal.
-4. Adapt `Makefile` targets to real project commands.
-5. Set up CI to run `make ci`.
-6. Keep plans and manual guide current through implementation.
+Single `index.html` + `CNAME` — no build step, no dependencies.
+Deployed via **GitHub Pages** with custom domain `sirgrimorum.com`.
 
-## Skill Companion
+See [`plan/sirgrimorum-landing.md`](plan/sirgrimorum-landing.md) for full detail.
 
-Use with the `agent-governance` skill in `skills/agent-governance/`.
-The skill is self-contained: it includes its own template and references under `assets/` and `references/`.
+## Documentation
 
-Model:
+- [Project Architecture](docs/project-architecture.md)
+- [Manual Setup](docs/manual-setup.md)
+- [AI Development Guide](docs/ai-development-guide.md)
 
-- `bootstrap` is deterministic and script-driven.
-- `adapt`, `upgrade`, and `finalize` are agent-driven workflows using skill context.
+## AI Assistant Governance
+
+- Canonical source of truth: [`AGENTS.md`](AGENTS.md)
+- Governance skill: `skills/agent-governance/SKILL.md`
+
+```bash
+make agents-bootstrap   # Copy missing governance files
+make agents-adapt       # Guidance for agent-driven adapt
+make agents-finalize    # Guidance for agent-driven finalize before PR/commit
+```
 
 ## Non-Negotiables
 
-- IaC-first provisioning policy.
-- Terraform foundation + CDK app-layer split.
-- Feature/foundation planning with early E2E outcomes.
-- Feature flags E2E for user-facing features (phase-aware).
-- Tests + CI test commands by default.
-- `.env` minimization and centralized config strategy.
-- PR drafts under `prs/`, remove after merge.
-- Worktree cleanup after merge.
 - Assistants do not commit unless explicitly requested.
+- Plan-first: update `plan/` files as scope evolves.
+- PR drafts under `prs/` before opening PRs.

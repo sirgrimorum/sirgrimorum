@@ -1,4 +1,4 @@
-# CODEX.md — <Project Name>
+# CODEX.md — Sirgrimorum
 
 Codex adapter file. Source of truth is `AGENTS.md`.
 

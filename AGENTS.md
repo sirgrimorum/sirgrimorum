@@ -1,6 +1,17 @@
-# AGENTS.md — <Project Name>
+# AGENTS.md — Sirgrimorum
 
 Canonical assistant source of truth for this repository.
+
+## Project Context
+
+**sirgrimorum.com** — static personal portfolio hub. Single `index.html` + `CNAME`, deployed via GitHub Pages with a custom domain. No build system, no backend, no IaC needed beyond DNS.
+
+- Design system: steampunk pixel art (tokens from `packages/web-ui/src/css/tokens.css` in the monorepo).
+- Fonts: `Press Start 2P`, `Silkscreen`, `IBM Plex Mono` (Google Fonts, OFL).
+- Links to: Cerebro Externo (brain4ai.app), Forge Mentor (mentor4ai.app), Entrepreneurity (entrepreneurity.app).
+- Also serves as the sending domain for Resend waitlist emails (`@sirgrimorum.com`).
+
+Active plan: [`plan/sirgrimorum-landing.md`](plan/sirgrimorum-landing.md).
 
 ## Canonical Hierarchy
 

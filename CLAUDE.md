@@ -1,4 +1,4 @@
-# CLAUDE.md — <Project Name>
+# CLAUDE.md — Sirgrimorum
 
 Claude adapter file. Source of truth is `AGENTS.md`.
 

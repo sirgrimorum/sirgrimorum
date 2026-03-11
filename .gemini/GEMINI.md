@@ -1,4 +1,4 @@
-# <Project Name> — Gemini Adapter
+# Sirgrimorum — Gemini Adapter
 
 Gemini adapter file. Source of truth is `AGENTS.md`.
 

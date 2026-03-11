@@ -1,4 +1,4 @@
-# Copilot Instructions — <Project Name>
+# Copilot Instructions — Sirgrimorum
 
 - Source of truth is `AGENTS.md`.
 - Favor simple, performant implementations.
