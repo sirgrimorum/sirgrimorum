@@ -1,0 +1,64 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">
+  <title>Sirgrimorum</title>
+  <defs>
+
+    <!--
+      Rebaba gradient: peaks just outside the inner circle (r≈39),
+      showing the raised ridge where overflow wax is thickest.
+      Tapers to dark at the outer thin edge.
+    -->
+    <radialGradient id="rebaba" cx="60" cy="60" r="56" gradientUnits="userSpaceOnUse">
+      <stop offset="0%"   stop-color="#1a0304"/>  <!-- deep dark center (under inner circle) -->
+      <stop offset="60%"  stop-color="#3e0c14"/>  <!-- inner rebaba zone -->
+      <stop offset="70%"  stop-color="#8c2a3c"/>  <!-- raised ridge peak (r≈39) -->
+      <stop offset="84%"  stop-color="#561422"/>  <!-- overflow body, thinning out -->
+      <stop offset="100%" stop-color="#1a0304"/>  <!-- outer thin edge, dark -->
+    </radialGradient>
+
+    <!--
+      Stamp impression gradient: smooth compressed surface,
+      light source from upper-left.
+    -->
+    <radialGradient id="impression" cx="50" cy="46" r="38" gradientUnits="userSpaceOnUse">
+      <stop offset="0%"   stop-color="#8c2a3c"/>  <!-- lighter at illuminated center -->
+      <stop offset="55%"  stop-color="#6a1c2c"/>  <!-- mid -->
+      <stop offset="100%" stop-color="#380a14"/>  <!-- darker at compressed edges -->
+    </radialGradient>
+
+    <!-- Gaslight sheen: small specular spot, upper-left -->
+    <radialGradient id="sheen" cx="44" cy="38" r="16" gradientUnits="userSpaceOnUse">
+      <stop offset="0%"   stop-color="#b83c52" stop-opacity="0.5"/>
+      <stop offset="100%" stop-color="#b83c52" stop-opacity="0"/>
+    </radialGradient>
+
+  </defs>
+
+  <!--
+    Outer wax blob: roughly circular with 4 uneven overflow lumps.
+    Lumps at ~1:30 (upper-right), ~4:30 (lower-right),
+    ~7:30 (lower-left, biggest), ~10:30 (upper-left).
+    Indentations between lumps stay close to the inner circle edge.
+  -->
+  <path
+    d="M 60,18
+       C 72,14  98,25  103,35
+       C 108,43 105,52 102,60
+       C 100,70 102,87  95,95
+       C 88,102  72,104  60,103
+       C 50,104  38,112  33,107
+       C 25,101  19,74   18,60
+       C 17,46   17,30   25,25
+       C 32,18   47,15   60,18 Z"
+    fill="url(#rebaba)"
+  />
+
+  <!-- Inner stamp impression: the clean circle the stamp face left -->
+  <circle cx="60" cy="60" r="36" fill="url(#impression)"/>
+
+  <!-- Gaslight sheen on the smooth pressed surface -->
+  <circle cx="60" cy="60" r="36" fill="url(#sheen)"/>
+
+  <!-- Stamp edge shadow: where the stamp rim pressed deepest into the wax -->
+  <circle cx="60" cy="60" r="36" fill="none" stroke="#1a0304" stroke-width="1.5"/>
+
+</svg>
