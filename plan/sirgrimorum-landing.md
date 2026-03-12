@@ -6,6 +6,8 @@
 
 **Status**: Pending (prerequisite: Resend migration deployed)
 
+**Hosting decision**: Option A — S3 + CloudFront (separate AWS org account, same pattern as brain-mcp / vitalidad)
+
 ---
 
 ## Purpose
@@ -132,67 +134,165 @@ Gmail's `+` addressing routes all replies to your existing inbox with no setup.
 
 ## Infrastructure
 
-### Option A: S3 + CloudFront (recommended — matches existing pattern)
+**Selected: Option A — S3 + CloudFront**
 
-Reuse the same infra pattern as brain4ai.app / mentor4ai.app marketing sites.
+This repo (`sirgrimorum`) is its own monorepo with its own Terraform + CDK setup,
+deployed to a separate AWS account within the same organization.
+Reference pattern: `../brain-mcp/infra/`.
 
-#### Terraform changes
+---
 
-1. Add `sirgrimorum.com` to the `domains` list in `staging.tfvars`:
+### Repo structure to create
 
+```
+sirgrimorum/
+  apps/
+    web-sirgrimorum/
+      index.html          # Full static page — no build step
+  infra/
+    terraform/
+      backend.tf
+      main.tf
+      variables.tf
+      outputs.tf
+      versions.tf
+      environments/
+        prod.tfvars
+      modules/
+        dns/              # ACM certs + Cloudflare CNAME records (same as brain-mcp)
+        storage/          # Marketing S3 bucket only (no DynamoDB, no ECR)
+        iam/              # GitHub OIDC role for GHA deploy
+        budget/           # Optional budget alert
+    cdk/
+      bin/
+        app.ts
+      lib/
+        cloudfront-stack.ts   # One CloudFront distribution + S3 OAC
+        config.ts
+      cdk.json
+      package.json
+      tsconfig.json
+  .github/
+    workflows/
+      deploy.yml          # S3 sync + CloudFront invalidation on push to main
+```
+
+---
+
+### Terraform modules
+
+Simpler than brain-mcp — no networking, no DynamoDB, no ECR.
+
+**`modules/dns/`** — identical to brain-mcp:
+- Cloudflare zone data source for `sirgrimorum.com`
+- ACM cert (regional, us-east-1 for CloudFront), wildcard SAN
+- ACM DNS validation via Cloudflare CNAME
+- Cloudflare CNAME records → CloudFront distribution domains (populated after CDK deploy)
+
+**`modules/storage/`** — one marketing bucket only:
+- `sirgrimorum-prod-marketing` (private, AES256 SSE, public access blocked)
+- OAC bucket policy: allows CloudFront distribution ARN (populated after CDK deploy)
+- Bucket naming: `sirgrimorum-{environment}-marketing`
+
+**`modules/iam/`** — GitHub OIDC role:
+- OIDC provider (or import if org-level provider exists)
+- Role: `sirgrimorum-prod-github-deploy`, trust `repo:sirgrimorum/sirgrimorum:ref:refs/heads/main`
+- Policy: `s3:PutObject`, `s3:DeleteObject`, `s3:ListBucket` on marketing bucket + `cloudfront:CreateInvalidation`
+
+**`environments/prod.tfvars`**:
 ```hcl
-domains = ["brain4ai.app", "mentor4ai.app", "sirgrimorum.com"]
+environment = "prod"
+region      = "us-east-1"
+domain      = "sirgrimorum.com"
+github_org  = "sirgrimorum"
+github_repo = "sirgrimorum"
+
+# Populated after CDK deploy:
+cloudfront_distribution_domain = ""
+
+# Populated after CDK deploy:
+marketing_cloudfront_distribution_arn = ""
+
+budget_limit       = 1
+budget_alert_email = "sirgrimorum+sirgrimorum@gmail.com"
+create_budgets     = false   # linked account — enable after payer activates
 ```
 
-2. This automatically creates:
-   - Cloudflare zone lookup
-   - ACM certs (regional + CloudFront wildcard)
-   - ACM DNS validation records in Cloudflare
+---
 
-3. Add a marketing bucket for sirgrimorum.com in the storage module
-   (same pattern as existing marketing buckets).
+### CDK stack
 
-4. After CDK deploy, add the CloudFront distribution domain to
-   `cloudfront_distribution_domains` in `staging.tfvars`.
+**`lib/cloudfront-stack.ts`** — simplified from brain-mcp (no API Gateway origins):
 
-#### CDK changes
+- Import marketing S3 bucket from Terraform outputs (bucket name + ARN from CDK context)
+- Import CloudFront ACM cert (us-east-1 ARN from Terraform outputs)
+- Single `S3OriginAccessControl` OAC
+- One `cloudfront.Distribution`:
+  - `domainNames: ["sirgrimorum.com", "www.sirgrimorum.com"]`
+  - S3 OAC origin
+  - `defaultRootObject: "index.html"`
+  - `REDIRECT_TO_HTTPS`
+  - www-redirect CloudFront Function (same inline function as brain-mcp — no `.html` rewrite needed, single-page site)
+  - 403/404 → `/index.html` (single page, no 404.html needed)
 
-Add a CloudFront distribution + S3 OAC for `sirgrimorum.com` in the
-CloudFront stack (same pattern as brain4ai/mentor4ai marketing distros).
+**CDK context** (`cdk.json`) holds Terraform output references, same pattern as brain-mcp.
 
-#### Deployment
+---
 
-Same as existing marketing sites:
+### GitHub Actions — `deploy.yml`
 
-```bash
-# Build the static site
-cd apps/web-sirgrimorum && pnpm build
+```yaml
+on:
+  push:
+    branches: [main]
+    paths:
+      - "apps/web-sirgrimorum/**"
+  workflow_dispatch:
 
-# Deploy to S3 + invalidate CloudFront
-aws s3 sync out/ s3://brain-mcp-staging-marketing-sirgrimorum-com/ --delete
-aws cloudfront create-invalidation --distribution-id EXXXXXX --paths "/*"
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: us-east-1
+      - name: Deploy to S3
+        run: |
+          aws s3 sync apps/web-sirgrimorum/ s3://${{ vars.MARKETING_S3_BUCKET }} --delete
+          aws cloudfront create-invalidation \
+            --distribution-id ${{ vars.CF_DISTRIBUTION_ID }} \
+            --paths "/*"
 ```
 
-Or add to the existing `deploy-marketing.yml` GitHub Actions workflow.
+No build step — `index.html` is synced directly.
 
-### Option B: GitHub Pages (zero cost, zero infra)
+---
 
-If you want to avoid any AWS cost/complexity:
+### Two-phase deploy sequence
 
-1. Create a repo `sirgrimorum/sirgrimorum.com` (or use existing)
-2. Single `index.html` with inline CSS (steampunk theme)
-3. Enable GitHub Pages → custom domain `sirgrimorum.com`
-4. Add Cloudflare DNS: `sirgrimorum.com` CNAME → `sirgrimorum.github.io`
-5. GitHub handles HTTPS via Let's Encrypt
+1. **Terraform apply (phase 1)**
+   - Creates S3 bucket, ACM certs, Cloudflare ACM validation records
+   - Leave `cloudfront_distribution_domain` and `marketing_cloudfront_distribution_arn` empty
 
-**Pros**: Zero cost, no S3/CloudFront overhead, 5-minute setup.
-**Cons**: Not in the monorepo deploy pipeline, separate repo.
+2. **CDK deploy**
+   - `cdk deploy` with context pointing to Terraform outputs
+   - Outputs: CloudFront distribution domain + ARN
 
-### Recommendation
+3. **Terraform apply (phase 2)**
+   - Populate `cloudfront_distribution_domain` and `marketing_cloudfront_distribution_arn` in `prod.tfvars`
+   - Creates Cloudflare CNAME records (`sirgrimorum.com` + `www.sirgrimorum.com` → CloudFront)
+   - Applies OAC bucket policy
 
-**Option B (GitHub Pages)** for now — this is a single static HTML page with
-no build step needed. You can always migrate to Option A later if the site
-grows or you want it in the monorepo pipeline.
+4. **First content deploy**
+   - `aws s3 sync apps/web-sirgrimorum/ s3://sirgrimorum-prod-marketing --delete`
+   - `aws cloudfront create-invalidation --distribution-id EXXXXXX --paths "/*"`
+   - Or trigger via GitHub Actions `workflow_dispatch`
 
 ---
 
@@ -200,12 +300,9 @@ grows or you want it in the monorepo pipeline.
 
 ### 1. Create the static site
 
-Single `index.html` file with inline styles (no build system needed):
-
 ```
-sirgrimorum.com/
+apps/web-sirgrimorum/
   index.html      # Full page with inline CSS + Google Fonts
-  CNAME           # GitHub Pages custom domain file: "sirgrimorum.com"
 ```
 
 **HTML structure:**
@@ -217,44 +314,50 @@ sirgrimorum.com/
 - `image-rendering: pixelated` on pixel art assets
 - Pixel fonts at integer sizes, `font-smooth: never`
 
-### 2. DNS setup (Cloudflare)
-
-**For GitHub Pages:**
-
-```
-sirgrimorum.com    A       185.199.108.153
-sirgrimorum.com    A       185.199.109.153
-sirgrimorum.com    A       185.199.110.153
-sirgrimorum.com    A       185.199.111.153
-www.sirgrimorum.com CNAME  sirgrimorum.github.io
-```
-
-Set `proxied = false` (DNS-only) — GitHub Pages handles HTTPS.
-
-**These are separate from the Resend DNS records** (SPF/DKIM/DMARC).
-Both sets coexist in the same Cloudflare zone.
-
-### 3. GitHub Pages setup
+### 2. Bootstrap Terraform
 
 ```bash
-# Create repo (or use existing)
-gh repo create sirgrimorum/sirgrimorum.com --public
+cd infra/terraform
 
-# Add the static site
-echo "sirgrimorum.com" > CNAME
-# ... create index.html ...
-git add . && git commit -m "Initial landing page"
-git push origin main
+# Init with S3 backend (new bucket in sirgrimorum AWS account)
+terraform init
 
-# Enable GitHub Pages in repo settings:
-# Settings → Pages → Source: Deploy from branch (main, / root)
-# Custom domain: sirgrimorum.com → Enforce HTTPS ✅
+# Phase 1: creates S3 bucket, ACM certs, Cloudflare validation records
+terraform apply -var-file=environments/prod.tfvars
 ```
 
-### 4. Verify
+### 3. CDK deploy
+
+```bash
+cd infra/cdk
+npm install
+npx cdk deploy -c sirgrimorum:env=prod
+# Note CloudFront distribution domain + ARN from outputs
+```
+
+### 4. Terraform phase 2
+
+Populate `cloudfront_distribution_domain` and `marketing_cloudfront_distribution_arn`
+in `environments/prod.tfvars` from CDK outputs, then:
+
+```bash
+terraform apply -var-file=environments/prod.tfvars
+# Creates Cloudflare CNAMEs + OAC bucket policy
+```
+
+### 5. Deploy content
+
+```bash
+aws s3 sync apps/web-sirgrimorum/ s3://sirgrimorum-prod-marketing --delete
+aws cloudfront create-invalidation --distribution-id EXXXXXX --paths "/*"
+```
+
+Or trigger via `workflow_dispatch` on `deploy.yml`.
+
+### 6. Verify
 
 - `curl -I https://sirgrimorum.com` → 200 OK
-- Check the page renders with steampunk theme
+- Page renders with steampunk theme
 - All 3 project links work
 - Resend domain verification still passes (DNS records are independent)
 

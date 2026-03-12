@@ -5,19 +5,44 @@
 Static single-page site. No framework, no build step, no server-side logic.
 
 ```
-sirgrimorum.com/
-  index.html    # Full page: inline CSS + Google Fonts + semantic HTML
-  CNAME         # GitHub Pages custom domain: "sirgrimorum.com"
+sirgrimorum/
+  apps/
+    web-sirgrimorum/
+      index.html    # Full page: inline CSS + Google Fonts + semantic HTML
+  infra/
+    terraform/      # S3, ACM, Cloudflare DNS, GitHub OIDC IAM
+    cdk/            # CloudFront distribution + S3 OAC
+  .github/
+    workflows/
+      deploy.yml    # S3 sync + CloudFront invalidation on push to main
 ```
 
 ## Hosting
 
-**GitHub Pages** — repo `sirgrimorum/sirgrimorum.com`, deployed from `main` branch root.
-DNS via Cloudflare (A records → GitHub Pages IPs, proxied = false). GitHub handles HTTPS via Let's Encrypt.
+**S3 + CloudFront** — separate AWS org account (not brain-mcp account).
+DNS via Cloudflare (CNAME → CloudFront distribution, proxied = false). CloudFront handles HTTPS via ACM.
+
+Pattern identical to `../brain-mcp/infra/` — see that repo for reference.
+
+### Infrastructure split
+
+| Layer | Tool | What it creates |
+| ----- | ---- | --------------- |
+| DNS + certs + bucket + IAM | Terraform | ACM certs, Cloudflare DNS records, S3 marketing bucket, GitHub OIDC role |
+| CloudFront | CDK | Distribution + S3 OAC |
+| Content deploy | GitHub Actions | `aws s3 sync` + CF invalidation |
+
+### Two-phase deploy
+
+Terraform and CDK have a circular dependency (CDK needs bucket ARN from Terraform; Terraform needs CloudFront ARN for OAC policy + CNAME):
+
+1. **Terraform phase 1** — bucket, certs, DNS validation records (leave CF vars empty)
+2. **CDK deploy** — distribution; note domain + ARN from outputs
+3. **Terraform phase 2** — populate `cloudfront_distribution_domain` + `marketing_cloudfront_distribution_arn` in `prod.tfvars`, apply to create CNAMEs + bucket policy
 
 ## Design System
 
-Steampunk pixel art theme. Tokens sourced from `packages/web-ui/src/css/tokens.css` in the monorepo; inline in `index.html` as CSS custom properties.
+Steampunk pixel art theme. Tokens sourced from `packages/web-ui/src/css/tokens.css` in the brain-mcp monorepo; inline in `index.html` as CSS custom properties.
 
 | Token | Value | Usage |
 | ----- | ----- | ----- |
@@ -49,10 +74,5 @@ Each card: product name (Silkscreen, accent glow), one-line tagline (IBM Plex Mo
 ## Delivery Targets
 
 - Each increment should produce a visible, functional page (no half-built states in production).
-- Foundation increment first: GitHub Pages + DNS + HTTPS.
-- Feature increment: full styled page with all 3 cards.
-
-## Infrastructure Note
-
-No Terraform or CDK needed for this project. GitHub Pages handles hosting and TLS.
-DNS records (A records for GitHub Pages + Resend SPF/DKIM/DMARC) both live in the same Cloudflare zone and are independent.
+- Foundation increment first: Terraform + CDK infra + DNS + HTTPS.
+- Feature increment: full styled page with all 3 cards deployed via GHA.
