@@ -1,0 +1,99 @@
+---
+import Layout from '../layouts/Layout.astro';
+import ProjectCard from './ProjectCard.astro';
+import LanguagePicker from './LanguagePicker.astro';
+import { getTranslations, PROJECT_META, localeLangTags, type Locale } from '../i18n/translations';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = getTranslations(locale);
+---
+
+<Layout lang={localeLangTags[locale]} title={t.pageTitle} description={t.pageDescription}>
+  <main>
+    <header class="hero">
+      <LanguagePicker currentLocale={locale} />
+      <div class="gear-icon pixel-font" aria-hidden="true">⚙</div>
+      <h1 class="hero-title pixel-font">SIRGRIMORUM</h1>
+      <p class="hero-tagline">{t.heroTagline}</p>
+    </header>
+
+    <section class="projects" aria-label={t.projectsLabel}>
+      {
+        PROJECT_META.map((meta) => (
+          <ProjectCard
+            name={t.projects[meta.key].name}
+            tagline={t.projects[meta.key].tagline}
+            description={t.projects[meta.key].description}
+            status={meta.status}
+            badgeText={t.badge[meta.status === 'alpha' ? 'alpha' : 'comingSoon']}
+            url={meta.url}
+            accent={meta.accent}
+          />
+        ))
+      }
+    </section>
+
+    <footer>
+      <p>{t.footerCopy}</p>
+    </footer>
+  </main>
+</Layout>
+
+<style>
+  main {
+    width: 100%;
+    max-width: 800px;
+    display: flex;
+    flex-direction: column;
+    gap: 3rem;
+  }
+
+  .hero {
+    text-align: center;
+    padding: 3rem 0 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .gear-icon {
+    font-size: 2.5rem;
+    color: var(--brass-primary);
+    line-height: 1;
+  }
+
+  .hero-title {
+    font-family: 'Press Start 2P', monospace;
+    font-size: clamp(1rem, 4vw, 1.5rem);
+    color: var(--text-heading);
+    text-shadow: 0 0 20px color-mix(in srgb, var(--brass-primary) 50%, transparent);
+    letter-spacing: 0.1em;
+  }
+
+  .hero-tagline {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.875rem;
+    color: var(--text-muted);
+    line-height: 1.8;
+    white-space: pre-line;
+  }
+
+  .projects {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  footer {
+    text-align: center;
+    padding-bottom: 2rem;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+  }
+</style>

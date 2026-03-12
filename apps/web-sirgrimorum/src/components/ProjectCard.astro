@@ -4,12 +4,12 @@ interface Props {
   tagline: string;
   description: string;
   status: 'alpha' | 'coming-soon';
+  badgeText: string;
   url: string;
   accent: string;
 }
 
-const { name, tagline, description, status, url, accent } = Astro.props;
-const badgeText = status === 'alpha' ? 'alpha' : 'coming soon';
+const { name, tagline, description, badgeText, url, accent } = Astro.props;
 const displayUrl = url.replace('https://', '');
 ---
 

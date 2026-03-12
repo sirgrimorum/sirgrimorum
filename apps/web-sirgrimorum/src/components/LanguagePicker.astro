@@ -1,0 +1,56 @@
+---
+import { getRelativeLocaleUrl } from 'astro:i18n';
+import { LOCALES, type Locale } from '../i18n/translations';
+
+interface Props {
+  currentLocale: Locale;
+}
+
+const { currentLocale } = Astro.props;
+
+const labels: Record<Locale, string> = { en: 'EN', es: 'ES', 'pt-br': 'PT' };
+---
+
+<nav class="lang-picker" aria-label="Language">
+  {
+    LOCALES.map((code) => (
+      <a
+        href={getRelativeLocaleUrl(code, '/')}
+        class:list={['lang-link', { active: code === currentLocale }]}
+        hreflang={code}
+        aria-current={code === currentLocale ? 'page' : undefined}
+      >
+        {labels[code]}
+      </a>
+    ))
+  }
+</nav>
+
+<style>
+  .lang-picker {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+  }
+
+  .lang-link {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.625rem;
+    text-decoration: none;
+    color: var(--text-muted);
+    border: 1px solid currentColor;
+    padding: 0.25rem 0.5rem;
+    letter-spacing: 0.1em;
+    transition:
+      color 0.1s,
+      border-color 0.1s;
+  }
+
+  .lang-link:hover {
+    color: var(--brass-primary);
+  }
+
+  .lang-link.active {
+    color: var(--brass-bright);
+  }
+</style>

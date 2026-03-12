@@ -118,7 +118,21 @@ Each card is a pixel-bordered panel with:
 
 ### Localization
 
-**Not needed for v1.** English only. The product sites handle their own i18n.
+**In scope from v1.** Three locales: English (default), Spanish, Brazilian Portuguese.
+
+| Locale | URL | html[lang] |
+| ------ | --- | ---------- |
+| en (default) | `/` | `en` |
+| es | `/es/` | `es` |
+| pt-br | `/pt-br/` | `pt-BR` |
+
+**Implementation:**
+- Astro built-in i18n routing (`prefixDefaultLocale: false`)
+- `src/i18n/translations.ts` — single file, all strings for all locales, type-safe
+- `src/components/HomePage.astro` — shared page template, takes `locale` prop
+- Three thin page wrappers: `pages/index.astro`, `pages/es/index.astro`, `pages/pt-br/index.astro`
+- `src/components/LanguagePicker.astro` — locale switcher in hero, uses `getRelativeLocaleUrl`
+- hreflang tags on all pages (en, es, pt-BR, x-default) via `getAbsoluteLocaleUrl`
 
 ---
 
