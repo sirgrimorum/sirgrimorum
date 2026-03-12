@@ -26,8 +26,16 @@ const displayUrl = url.replace('https://', '');
 <style>
   .card {
     display: block;
-    background: var(--bg-surface);
+    /* Base surface + 4 corner rivets as radial-gradient dots */
+    background:
+      radial-gradient(circle, var(--accent) 4px, transparent 4px) 8px 8px / 8px 8px no-repeat,
+      radial-gradient(circle, var(--accent) 4px, transparent 4px) calc(100% - 8px) 8px / 8px 8px no-repeat,
+      radial-gradient(circle, var(--accent) 4px, transparent 4px) 8px calc(100% - 8px) / 8px 8px no-repeat,
+      radial-gradient(circle, var(--accent) 4px, transparent 4px) calc(100% - 8px) calc(100% - 8px) / 8px 8px no-repeat,
+      var(--bg-surface);
     border: 2px solid var(--accent);
+    border-radius: 8px;
+    box-shadow: 0 0 8px color-mix(in srgb, var(--accent) 20%, transparent);
     padding: 1.5rem;
     text-decoration: none;
     color: inherit;
@@ -35,7 +43,7 @@ const displayUrl = url.replace('https://', '');
   }
 
   .card:hover {
-    box-shadow: 0 0 16px color-mix(in srgb, var(--accent) 35%, transparent);
+    box-shadow: 0 0 20px color-mix(in srgb, var(--accent) 50%, transparent);
   }
 
   .card-header {
