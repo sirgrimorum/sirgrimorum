@@ -2,13 +2,22 @@
 
 ## Overview
 
-Static single-page site. No framework, no build step, no server-side logic.
+Static single-page site built with [Astro](https://astro.build). Outputs pure HTML+CSS — no client-side JavaScript. No server-side logic.
 
 ```
 sirgrimorum/
   apps/
-    web-sirgrimorum/
-      index.html    # Full page: inline CSS + Google Fonts + semantic HTML
+    web-sirgrimorum/        # Astro project
+      src/
+        layouts/
+          Layout.astro      # Base HTML: Google Fonts, CSS tokens, global styles
+        components/
+          ProjectCard.astro # Reusable card (name, tagline, badge, link)
+        pages/
+          index.astro       # Hero + 3 project cards + footer
+      astro.config.mjs
+      package.json
+      tsconfig.json
   infra/
     terraform/      # S3, ACM, Cloudflare DNS, GitHub OIDC IAM
     cdk/            # CloudFront distribution + S3 OAC
@@ -66,10 +75,11 @@ Each card: product name (Silkscreen, accent glow), one-line tagline (IBM Plex Mo
 
 ## Layering Principles
 
-- No JavaScript required. Pure HTML + CSS.
-- `image-rendering: pixelated` on pixel art assets; `font-smooth: never` on pixel fonts.
+- No client-side JavaScript. Astro builds to pure HTML+CSS.
+- `-webkit-font-smoothing: none` on pixel fonts; `.pixel-art` utility class applies `image-rendering: pixelated` on scaled pixel art.
 - Single column layout, `max-width: 800px`, responsive.
 - No external runtime dependencies beyond Google Fonts CDN.
+- Design tokens defined in `Layout.astro` `is:global` style block (CSS custom properties). Migrate to `packages/web-ui` when that package exists.
 
 ## Delivery Targets
 

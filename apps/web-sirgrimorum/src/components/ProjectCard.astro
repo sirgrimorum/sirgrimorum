@@ -1,0 +1,90 @@
+---
+interface Props {
+  name: string;
+  tagline: string;
+  description: string;
+  status: 'alpha' | 'coming-soon';
+  url: string;
+  accent: string;
+}
+
+const { name, tagline, description, status, url, accent } = Astro.props;
+const badgeText = status === 'alpha' ? 'alpha' : 'coming soon';
+const displayUrl = url.replace('https://', '');
+---
+
+<a href={url} class="card" style={`--accent: ${accent}`} target="_blank" rel="noopener noreferrer">
+  <div class="card-header">
+    <span class="card-name">{name}</span>
+    <span class="badge">{badgeText}</span>
+  </div>
+  <p class="card-tagline">{tagline}</p>
+  <p class="card-description">{description}</p>
+  <span class="card-link">{displayUrl} →</span>
+</a>
+
+<style>
+  .card {
+    display: block;
+    background: var(--bg-surface);
+    border: 2px solid var(--accent);
+    padding: 1.5rem;
+    text-decoration: none;
+    color: inherit;
+    transition: box-shadow 0.15s ease;
+  }
+
+  .card:hover {
+    box-shadow: 0 0 16px color-mix(in srgb, var(--accent) 35%, transparent);
+  }
+
+  .card-header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .card-name {
+    font-family: 'Silkscreen', monospace;
+    font-size: 1rem;
+    color: var(--accent);
+    text-shadow: 0 0 8px color-mix(in srgb, var(--accent) 55%, transparent);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .badge {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.625rem;
+    color: var(--text-muted);
+    border: 1px solid var(--text-muted);
+    padding: 0.125rem 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .card-tagline {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.875rem;
+    color: var(--text-heading);
+    margin-bottom: 0.5rem;
+  }
+
+  .card-description {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--text-primary);
+    margin-bottom: 1.25rem;
+    line-height: 1.7;
+  }
+
+  .card-link {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--copper);
+  }
+</style>

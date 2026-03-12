@@ -11,7 +11,7 @@ Ship a minimal static landing page at `sirgrimorum.com` that:
 
 ## Feature Milestones
 
-1. **Landing page live** — `index.html` with steampunk pixel art theme, hero, 3 project cards, footer. Deployed via GitHub Pages at `sirgrimorum.com`.
+1. **Landing page live** — Astro app (`apps/web-sirgrimorum/`) with steampunk pixel art theme, hero, 3 project cards, footer. Deployed via S3+CloudFront at `sirgrimorum.com`. *(static site scaffolded — pending infra)*
 2. **DNS + HTTPS** — Cloudflare A records pointing to GitHub Pages IPs. HTTPS enforced. Coexists with Resend SPF/DKIM/DMARC records.
 3. **All three project cards** — Cerebro Externo (alpha), Forge Mentor (alpha), Entrepreneurity (coming soon). Each with name, tagline, status badge, and link.
 

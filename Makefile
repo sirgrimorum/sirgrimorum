@@ -26,28 +26,28 @@ help: ## Show available developer use-case commands
 	@echo "  make agents-hooks-install Disabled in agent-driven model"
 
 install: ## Install dependencies
-	@echo "replace with package-manager install"
+	cd apps/web-sirgrimorum && npm install
 
 dev: ## Start local dev workflow
-	@echo "replace with project dev command"
+	cd apps/web-sirgrimorum && npm run dev
 
 test: ## Run core tests
-	@echo "replace with project test command"
+	@echo "No test suite yet."
 
 test-e2e: ## Run E2E tests
-	@echo "replace with project E2E command"
+	@echo "No E2E tests yet."
 
 typecheck: ## Run typecheck
-	@echo "replace with project typecheck command"
+	cd apps/web-sirgrimorum && npm run typecheck
 
 lint: ## Run lint checks
-	@echo "replace with project lint command"
+	@echo "No linter configured yet."
 
 format: ## Format codebase
-	@echo "replace with project format command"
+	@echo "No formatter configured yet."
 
 build: ## Build all deliverables
-	@echo "replace with project build command"
+	cd apps/web-sirgrimorum && npm run build
 
 verify: ## Standard local PR verification bundle
 	$(MAKE) test
@@ -129,4 +129,4 @@ agents-hooks-install: ## Disabled: finalize is agent-driven
 	@exit 1
 
 clean: ## Remove local build artifacts
-	@echo "replace with clean commands"
+	rm -rf apps/web-sirgrimorum/dist apps/web-sirgrimorum/.astro apps/web-sirgrimorum/node_modules

@@ -4,7 +4,7 @@ Canonical assistant source of truth for this repository.
 
 ## Project Context
 
-**sirgrimorum.com** — static personal portfolio hub. Single `index.html` + `CNAME`, deployed via GitHub Pages with a custom domain. No build system, no backend, no IaC needed beyond DNS.
+**sirgrimorum.com** — static personal portfolio hub. Astro app (`apps/web-sirgrimorum/`) that builds to pure HTML+CSS. Deployed to S3+CloudFront via GitHub Actions. IaC: Terraform (DNS/certs/bucket/IAM) + CDK (CloudFront distribution).
 
 - Design system: steampunk pixel art (tokens from `packages/web-ui/src/css/tokens.css` in the monorepo).
 - Fonts: `Press Start 2P`, `Silkscreen`, `IBM Plex Mono` (Google Fonts, OFL).

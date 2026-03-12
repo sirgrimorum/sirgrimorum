@@ -4,7 +4,13 @@
 > design system. Links to three alpha projects. Supports email sender reputation
 > for Resend (brain/mentor waitlist emails sent from `@sirgrimorum.com`).
 
-**Status**: Pending (prerequisite: Resend migration deployed)
+**Status**: In Progress
+
+**Decisions**:
+- Framework: Astro (static output, no client JS, component model for future reuse)
+- Hosting: S3 + CloudFront (separate AWS org account)
+- ✅ Resend `@sirgrimorum.com` sender domain verified
+- ✅ Static site scaffolded (`apps/web-sirgrimorum/`) — pending infra
 
 **Hosting decision**: Option A — S3 + CloudFront (separate AWS org account, same pattern as brain-mcp / vitalidad)
 
@@ -298,21 +304,21 @@ No build step — `index.html` is synced directly.
 
 ## Implementation Steps
 
-### 1. Create the static site
+### 1. Create the static site ✅
 
 ```
 apps/web-sirgrimorum/
-  index.html      # Full page with inline CSS + Google Fonts
+  src/
+    layouts/Layout.astro        # Google Fonts, CSS tokens (custom properties), global styles
+    components/ProjectCard.astro # name, tagline, badge, link — scoped styles
+    pages/index.astro           # Hero + 3 project cards + footer
+  astro.config.mjs              # output: static, site: https://sirgrimorum.com
+  package.json
+  tsconfig.json
 ```
 
-**HTML structure:**
-
-- `<head>`: Google Fonts (Press Start 2P, Silkscreen, IBM Plex Mono), meta tags, inline `<style>`
-- `<body>`: Hero section + 3 project cards + footer
-- No JavaScript required (pure HTML+CSS)
-- Responsive: single column, max-width 800px
-- `image-rendering: pixelated` on pixel art assets
-- Pixel fonts at integer sizes, `font-smooth: never`
+Build output: `apps/web-sirgrimorum/dist/` (pure HTML+CSS, no client JS).
+Deploy: `aws s3 sync apps/web-sirgrimorum/dist/ s3://<bucket>` (see `deploy.yml`).
 
 ### 2. Bootstrap Terraform
 
