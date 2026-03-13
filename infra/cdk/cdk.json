@@ -1,0 +1,16 @@
+{
+  "app": "npx ts-node --prefer-ts-exts bin/app.ts",
+  "context": {
+    "sirgrimorum:env": "prod",
+    "sirgrimorum:prod": {
+      "account": "369292121060",
+      "region": "us-east-1",
+      "domain": "sirgrimorum.com",
+      "terraform": {
+        "marketingBucketName": "sirgrimorum-prod-marketing",
+        "marketingBucketArn": "arn:aws:s3:::sirgrimorum-prod-marketing",
+        "cloudfrontCertArn": "arn:aws:acm:us-east-1:369292121060:certificate/82bad6d8-b6d0-4e68-b6fc-92184d17f42d"
+      }
+    }
+  }
+}

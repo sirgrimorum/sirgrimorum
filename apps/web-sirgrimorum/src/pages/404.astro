@@ -1,0 +1,69 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="404 — Sirgrimorum" description="Page not found.">
+  <main>
+    <header class="hero">
+      <img src="/dragon-seal.png" class="hero-seal pixel-art" width="148" height="148" alt="Sirgrimorum dragon seal" />
+      <h1 class="title pixel-font">404</h1>
+      <p class="tagline">This page was lost in the steam.</p>
+      <a href="/" class="home-link">Back to the workshop</a>
+    </header>
+  </main>
+</Layout>
+
+<style>
+  main {
+    width: 100%;
+    max-width: 800px;
+    display: flex;
+    flex-direction: column;
+    gap: 3rem;
+  }
+
+  .hero {
+    text-align: center;
+    padding: 6rem 0 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+  }
+
+  .hero-seal {
+    width: 148px;
+    height: 148px;
+    filter: drop-shadow(0 0 14px color-mix(in srgb, #c9a84c 40%, transparent));
+    opacity: 0.6;
+  }
+
+  .title {
+    font-family: 'Press Start 2P', monospace;
+    font-size: clamp(2rem, 8vw, 3rem);
+    color: var(--text-heading);
+    text-shadow: 0 0 20px color-mix(in srgb, var(--brass-primary) 50%, transparent);
+    letter-spacing: 0.1em;
+  }
+
+  .tagline {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.875rem;
+    color: var(--text-muted);
+  }
+
+  .home-link {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.875rem;
+    color: var(--copper);
+    text-decoration: none;
+    border: 1px solid var(--brass-primary);
+    padding: 0.5rem 1.5rem;
+    transition: border-color 0.2s, color 0.2s;
+  }
+
+  .home-link:hover {
+    color: var(--brass-bright);
+    border-color: var(--brass-bright);
+  }
+</style>

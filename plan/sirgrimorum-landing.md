@@ -4,13 +4,18 @@
 > design system. Links to three alpha projects. Supports email sender reputation
 > for Resend (brain/mentor waitlist emails sent from `@sirgrimorum.com`).
 
-**Status**: In Progress
+**Status**: Deployed
 
 **Decisions**:
 - Framework: Astro (static output, no client JS, component model for future reuse)
 - Hosting: S3 + CloudFront (separate AWS org account)
 - ✅ Resend `@sirgrimorum.com` sender domain verified
-- ✅ Static site scaffolded (`apps/web-sirgrimorum/`) — pending infra
+- ✅ Static site scaffolded (`apps/web-sirgrimorum/`)
+- ✅ Terraform infra deployed (S3, ACM, IAM OIDC, Cloudflare DNS, budget alerts)
+- ✅ CDK CloudFront distribution deployed (E2GG0KR8IYR869)
+- ✅ DNS CNAMEs + OAC bucket policy applied
+- ✅ Content deployed to S3 + CloudFront invalidated
+- ✅ Site live at https://sirgrimorum.com
 
 **Hosting decision**: Option A — S3 + CloudFront (separate AWS org account, same pattern as brain-mcp / vitalidad)
 
@@ -318,7 +323,7 @@ No build step — `index.html` is synced directly.
 
 ## Implementation Steps
 
-### 1. Create the static site ✅
+### 1. Create the static site ✅ (done)
 
 ```
 apps/web-sirgrimorum/
@@ -334,7 +339,7 @@ apps/web-sirgrimorum/
 Build output: `apps/web-sirgrimorum/dist/` (pure HTML+CSS, no client JS).
 Deploy: `aws s3 sync apps/web-sirgrimorum/dist/ s3://<bucket>` (see `deploy.yml`).
 
-### 2. Bootstrap Terraform
+### 2. Bootstrap Terraform ✅ (done)
 
 ```bash
 cd infra/terraform
@@ -346,7 +351,7 @@ terraform init
 terraform apply -var-file=environments/prod.tfvars
 ```
 
-### 3. CDK deploy
+### 3. CDK deploy ✅ (done)
 
 ```bash
 cd infra/cdk
@@ -355,7 +360,7 @@ npx cdk deploy -c sirgrimorum:env=prod
 # Note CloudFront distribution domain + ARN from outputs
 ```
 
-### 4. Terraform phase 2
+### 4. Terraform phase 2 ✅ (done)
 
 Populate `cloudfront_distribution_domain` and `marketing_cloudfront_distribution_arn`
 in `environments/prod.tfvars` from CDK outputs, then:
@@ -365,7 +370,7 @@ terraform apply -var-file=environments/prod.tfvars
 # Creates Cloudflare CNAMEs + OAC bucket policy
 ```
 
-### 5. Deploy content
+### 5. Deploy content ✅ (done)
 
 ```bash
 aws s3 sync apps/web-sirgrimorum/ s3://sirgrimorum-prod-marketing --delete
@@ -374,7 +379,7 @@ aws cloudfront create-invalidation --distribution-id EXXXXXX --paths "/*"
 
 Or trigger via `workflow_dispatch` on `deploy.yml`.
 
-### 6. Verify
+### 6. Verify ✅ (done)
 
 - `curl -I https://sirgrimorum.com` → 200 OK
 - Page renders with steampunk theme
