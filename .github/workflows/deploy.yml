@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - 'apps/web-sirgrimorum/**'
+      - 'infra/cdk/**'
   workflow_dispatch:
 
 permissions:
@@ -12,7 +13,58 @@ permissions:
   id-token: write
 
 jobs:
-  deploy:
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      cdk: ${{ steps.filter.outputs.cdk }}
+      web: ${{ steps.filter.outputs.web }}
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            cdk:
+              - 'infra/cdk/**'
+            web:
+              - 'apps/web-sirgrimorum/**'
+
+  cdk-deploy:
+    needs: changes
+    if: needs.changes.outputs.cdk == 'true' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: infra/cdk/package-lock.json
+
+      - uses: aws-actions/configure-aws-credentials@v5
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: us-east-1
+
+      - name: Install CDK dependencies
+        working-directory: infra/cdk
+        run: npm ci
+
+      - name: CDK diff
+        working-directory: infra/cdk
+        run: npx cdk diff --all
+
+      - name: CDK deploy
+        working-directory: infra/cdk
+        run: npx cdk deploy --all --require-approval never
+
+  web-deploy:
+    needs: [changes, cdk-deploy]
+    if: >-
+      !failure() && !cancelled() &&
+      (needs.changes.outputs.web == 'true' || github.event_name == 'workflow_dispatch')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5

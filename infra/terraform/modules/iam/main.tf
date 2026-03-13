@@ -1,3 +1,5 @@
+data "aws_caller_identity" "current" {}
+
 # GitHub OIDC Provider
 # AWS ignores the thumbprint for GitHub OIDC validation, but the field is required.
 # Value sourced from: https://github.blog/changelog/2023-06-27-github-actions-update-on-oidc-integration-with-aws/
@@ -53,6 +55,23 @@ resource "aws_iam_role_policy" "s3_deploy" {
           var.marketing_bucket_arn,
           "${var.marketing_bucket_arn}/*"
         ]
+      }
+    ]
+  })
+}
+
+# CDK deploy policy — allows assuming CDK bootstrap roles for cdk deploy from CI
+resource "aws_iam_role_policy" "cdk_deploy" {
+  name = "cdk-deploy"
+  role = aws_iam_role.github_actions.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect   = "Allow"
+        Action   = "sts:AssumeRole"
+        Resource = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/cdk-hnb659fds-*-${data.aws_caller_identity.current.account_id}-us-east-1"
       }
     ]
   })
