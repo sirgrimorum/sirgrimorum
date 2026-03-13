@@ -16,7 +16,7 @@ const t = getTranslations(locale);
   <main>
     <header class="hero">
       <LanguagePicker currentLocale={locale} />
-      <img src="/dragon-seal.svg" alt="Sirgrimorum dragon seal" class="hero-seal" width="96" height="96" />
+      <img src="/dragon-seal.png" class="hero-seal" width="148" height="148" alt="Sirgrimorum dragon seal" />
       <h1 class="hero-title pixel-font">SIRGRIMORUM</h1>
       <p class="hero-tagline">{t.heroTagline}</p>
     </header>
@@ -62,9 +62,9 @@ const t = getTranslations(locale);
   }
 
   .hero-seal {
-    width: 96px;
-    height: 96px;
-    filter: drop-shadow(0 0 10px color-mix(in srgb, #c9a84c 40%, transparent));
+    width: 148px;
+    height: 148px;
+    filter: drop-shadow(0 0 14px color-mix(in srgb, #c9a84c 40%, transparent));
   }
 
   .hero-title {
