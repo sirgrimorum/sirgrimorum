@@ -72,8 +72,8 @@ function handler(event) {
       errorResponses: [
         {
           httpStatus: 403,
-          responseHttpStatus: 200,
-          responsePagePath: '/index.html',
+          responseHttpStatus: 404,
+          responsePagePath: '/404.html',
         },
         {
           httpStatus: 404,
