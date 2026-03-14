@@ -53,17 +53,55 @@ import Layout from '../layouts/Layout.astro';
   }
 
   .home-link {
+    display: inline-block;
     font-family: 'IBM Plex Mono', monospace;
     font-size: 0.875rem;
-    color: var(--copper);
+    color: var(--text-heading);
     text-decoration: none;
-    border: 1px solid var(--brass-primary);
-    padding: 0.5rem 1.5rem;
-    transition: border-color 0.2s, color 0.2s;
+    background:
+      radial-gradient(circle,
+        color-mix(in srgb, var(--brass-primary) 50%, white) 0px,
+        var(--brass-primary) 2px,
+        color-mix(in srgb, var(--brass-primary) 40%, black) 3px,
+        transparent 3.5px
+      ) 8px 50% / 7px 7px no-repeat,
+      radial-gradient(circle,
+        color-mix(in srgb, var(--brass-primary) 50%, white) 0px,
+        var(--brass-primary) 2px,
+        color-mix(in srgb, var(--brass-primary) 40%, black) 3px,
+        transparent 3.5px
+      ) calc(100% - 8px) 50% / 7px 7px no-repeat,
+      var(--bg-surface);
+    padding: 0.625rem 2.25rem;
+    border: 2px solid;
+    border-top-color: color-mix(in srgb, var(--brass-primary) 55%, white);
+    border-left-color: color-mix(in srgb, var(--brass-primary) 45%, white);
+    border-right-color: color-mix(in srgb, var(--brass-primary) 60%, black);
+    border-bottom-color: color-mix(in srgb, var(--brass-primary) 70%, black);
+    border-radius: 4px;
+    box-shadow:
+      0 3px 6px rgba(0, 0, 0, 0.5),
+      0 1px 2px rgba(0, 0, 0, 0.3),
+      inset 0 1px 2px color-mix(in srgb, var(--brass-primary) 25%, white),
+      inset 0 -2px 3px rgba(0, 0, 0, 0.5);
+    transition: box-shadow 0.2s ease, transform 0.2s ease;
   }
 
   .home-link:hover {
-    color: var(--brass-bright);
-    border-color: var(--brass-bright);
+    transform: translateY(-2px);
+    box-shadow:
+      0 6px 14px rgba(0, 0, 0, 0.6),
+      0 2px 4px rgba(0, 0, 0, 0.4),
+      0 0 10px color-mix(in srgb, var(--brass-primary) 25%, transparent),
+      inset 0 1px 2px color-mix(in srgb, var(--brass-primary) 30%, white),
+      inset 0 -2px 3px rgba(0, 0, 0, 0.5);
+  }
+
+  .home-link:active {
+    transform: translateY(1px);
+    box-shadow:
+      0 1px 2px rgba(0, 0, 0, 0.5),
+      inset 0 2px 4px rgba(0, 0, 0, 0.6),
+      inset 0 -1px 1px color-mix(in srgb, var(--brass-primary) 20%, white);
   }
 </style>

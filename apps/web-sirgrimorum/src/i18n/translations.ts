@@ -13,19 +13,19 @@ export const PROJECT_META = [
   {
     key: 'cerebroExterno' as const,
     url: 'https://brain4ai.app',
-    accent: '#5a9abe',
+    accent: '#5a6b72',
     status: 'alpha' as const,
   },
   {
     key: 'forgeMentor' as const,
     url: 'https://mentor4ai.app',
-    accent: '#e8a317',
+    accent: '#8a7a3a',
     status: 'alpha' as const,
   },
   {
     key: 'entrepreneurity' as const,
     url: 'https://entrepreneurity.app',
-    accent: '#c0392b',
+    accent: '#7a4a3a',
     status: 'coming-soon' as const,
   },
 ];

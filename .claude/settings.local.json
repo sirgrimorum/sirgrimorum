@@ -67,7 +67,11 @@
       "Bash(cd infra/terraform && terraform plan -var-file=environments/prod.tfvars -var=\"cloudflare_api_token=unused\" -target=module.iam 2>&1)",
       "Bash(cd infra/terraform && terraform apply -var-file=environments/prod.tfvars -var=\"cloudflare_api_token=unused\" -target=module.iam -auto-approve 2>&1)",
       "Bash(cd D:/negocios/sirgrimorum/infra/terraform && terraform apply -var-file=environments/prod.tfvars -var=\"cloudflare_api_token=unused\" -target=module.iam -auto-approve 2>&1)",
-      "Bash(cd D:/negocios/sirgrimorum/infra/terraform && terraform plan -var-file=environments/prod.tfvars -var=\"cloudflare_api_token=unused\" -target=module.iam 2>&1)"
+      "Bash(cd D:/negocios/sirgrimorum/infra/terraform && terraform plan -var-file=environments/prod.tfvars -var=\"cloudflare_api_token=unused\" -target=module.iam 2>&1)",
+      "Bash(cd:*)",
+      "Bash(aws configure:*)",
+      "Read(//c/Users/AndresEspinosa/.aws/**)",
+      "Bash(grep:*)"
     ]
   }
 }
