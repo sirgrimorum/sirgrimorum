@@ -62,7 +62,12 @@
       "Bash(curl -4 -s -o /dev/null -w \"sirgrimorum.com: %{http_code}\\\\n\" https://sirgrimorum.com/ 2>&1)",
       "Bash(curl -4 -s -o /dev/null -w \"ES page: %{http_code}\\\\n\" https://d1m1oy42yu5b4n.cloudfront.net/es/ 2>&1 && curl -4 -s -o /dev/null -w \"PT-BR page: %{http_code}\\\\n\" https://d1m1oy42yu5b4n.cloudfront.net/pt-br/ 2>&1)",
       "Bash(curl -4 -s -o /dev/null -w \"www redirect: %{http_code}\\\\n%{redirect_url}\" -H \"Host: www.sirgrimorum.com\" https://d1m1oy42yu5b4n.cloudfront.net/ 2>&1)",
-      "Bash(find /d/negocios/sirgrimorum/apps/web-sirgrimorum/src/pages -type f -name \"*.astro\" 2>/dev/null | head -20)"
+      "Bash(find /d/negocios/sirgrimorum/apps/web-sirgrimorum/src/pages -type f -name \"*.astro\" 2>/dev/null | head -20)",
+      "Bash(cd infra/terraform && terraform plan -target=module.iam 2>&1)",
+      "Bash(cd infra/terraform && terraform plan -var-file=environments/prod.tfvars -var=\"cloudflare_api_token=unused\" -target=module.iam 2>&1)",
+      "Bash(cd infra/terraform && terraform apply -var-file=environments/prod.tfvars -var=\"cloudflare_api_token=unused\" -target=module.iam -auto-approve 2>&1)",
+      "Bash(cd D:/negocios/sirgrimorum/infra/terraform && terraform apply -var-file=environments/prod.tfvars -var=\"cloudflare_api_token=unused\" -target=module.iam -auto-approve 2>&1)",
+      "Bash(cd D:/negocios/sirgrimorum/infra/terraform && terraform plan -var-file=environments/prod.tfvars -var=\"cloudflare_api_token=unused\" -target=module.iam 2>&1)"
     ]
   }
 }

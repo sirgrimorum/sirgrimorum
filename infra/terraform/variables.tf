@@ -1,3 +1,8 @@
+variable "aws_profile" {
+  type    = string
+  default = null
+}
+
 variable "environment" {
   type = string
   validation {

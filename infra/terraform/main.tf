@@ -1,6 +1,6 @@
 provider "aws" {
   region  = var.region
-  profile = "sirg-main"
+  profile = var.aws_profile
 
   default_tags {
     tags = {
@@ -37,6 +37,8 @@ module "iam" {
   github_repo                = var.github_repo
   marketing_bucket_arn       = module.storage.marketing_bucket_arn
   cloudfront_distribution_arn = var.marketing_cloudfront_distribution_arn
+  terraform_state_bucket_arn = "arn:aws:s3:::sirgrimorum-terraform-state"
+  terraform_lock_table_arn   = "arn:aws:dynamodb:us-east-1:369292121060:table/sirgrimorum-terraform-locks"
 }
 
 module "budget" {

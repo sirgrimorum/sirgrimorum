@@ -1,3 +1,4 @@
+aws_profile = "sirg-main"
 environment = "prod"
 region      = "us-east-1"
 domain      = "sirgrimorum.com"

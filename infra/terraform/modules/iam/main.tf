@@ -77,6 +77,119 @@ resource "aws_iam_role_policy" "cdk_deploy" {
   })
 }
 
+# --- Terraform CI role ---
+
+resource "aws_iam_role" "terraform" {
+  name = "sirgrimorum-${var.environment}-terraform"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Principal = {
+          Federated = aws_iam_openid_connect_provider.github.arn
+        }
+        Action = "sts:AssumeRoleWithWebIdentity"
+        Condition = {
+          StringEquals = {
+            "token.actions.githubusercontent.com:aud" = "sts.amazonaws.com"
+          }
+          StringLike = {
+            "token.actions.githubusercontent.com:sub" = "repo:${var.github_org}/${var.github_repo}:*"
+          }
+        }
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy" "terraform_state" {
+  name = "terraform-state"
+  role = aws_iam_role.terraform.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "s3:GetObject",
+          "s3:PutObject",
+          "s3:DeleteObject",
+          "s3:ListBucket"
+        ]
+        Resource = [
+          var.terraform_state_bucket_arn,
+          "${var.terraform_state_bucket_arn}/*"
+        ]
+      },
+      {
+        Effect = "Allow"
+        Action = [
+          "dynamodb:GetItem",
+          "dynamodb:PutItem",
+          "dynamodb:DeleteItem"
+        ]
+        Resource = var.terraform_lock_table_arn
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy" "terraform_manage" {
+  name = "terraform-manage"
+  role = aws_iam_role.terraform.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Sid    = "IAM"
+        Effect = "Allow"
+        Action = "iam:*"
+        Resource = [
+          "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/sirgrimorum-*",
+          "arn:aws:iam::${data.aws_caller_identity.current.account_id}:oidc-provider/token.actions.githubusercontent.com"
+        ]
+      },
+      {
+        Sid    = "S3"
+        Effect = "Allow"
+        Action = "s3:*"
+        Resource = [
+          "arn:aws:s3:::sirgrimorum-*",
+          "arn:aws:s3:::sirgrimorum-*/*"
+        ]
+      },
+      {
+        Sid      = "ACM"
+        Effect   = "Allow"
+        Action   = "acm:*"
+        Resource = "*"
+      },
+      {
+        Sid    = "SNS"
+        Effect = "Allow"
+        Action = "sns:*"
+        Resource = "arn:aws:sns:us-east-1:${data.aws_caller_identity.current.account_id}:sirgrimorum-*"
+      },
+      {
+        Sid      = "Budgets"
+        Effect   = "Allow"
+        Action   = "budgets:*"
+        Resource = "*"
+      },
+      {
+        Sid      = "STS"
+        Effect   = "Allow"
+        Action   = "sts:GetCallerIdentity"
+        Resource = "*"
+      }
+    ]
+  })
+}
+
 # CloudFront invalidation policy — created in phase 2 when distribution ARN is available
 resource "aws_iam_role_policy" "cloudfront_invalidation" {
   count = var.cloudfront_distribution_arn != "" ? 1 : 0

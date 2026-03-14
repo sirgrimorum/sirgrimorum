@@ -21,3 +21,7 @@ output "cloudflare_zone_id" {
 output "budget_alerts_topic_arn" {
   value = module.budget.budget_alerts_topic_arn
 }
+
+output "terraform_role_arn" {
+  value = module.iam.terraform_role_arn
+}

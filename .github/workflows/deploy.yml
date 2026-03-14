@@ -19,9 +19,9 @@ jobs:
       cdk: ${{ steps.filter.outputs.cdk }}
       web: ${{ steps.filter.outputs.web }}
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
-      - uses: dorny/paths-filter@v3
+      - uses: step-security/paths-filter@v3
         id: filter
         with:
           filters: |
@@ -35,11 +35,11 @@ jobs:
     if: needs.changes.outputs.cdk == 'true' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - uses: actions/setup-node@v6
         with:
-          node-version: '20'
+          node-version: '22'
           cache: 'npm'
           cache-dependency-path: infra/cdk/package-lock.json
 
@@ -67,11 +67,11 @@ jobs:
       (needs.changes.outputs.web == 'true' || github.event_name == 'workflow_dispatch')
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - uses: actions/setup-node@v6
         with:
-          node-version: '20'
+          node-version: '22'
           cache: 'npm'
           cache-dependency-path: apps/web-sirgrimorum/package-lock.json
 
